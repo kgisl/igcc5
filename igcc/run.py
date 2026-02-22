@@ -27,11 +27,21 @@ with open(igcc.utils.get_asset_dir() / "config.yaml") as fp:
 # Matches `include` directives and `using` statements
 PREAMBLE_RE = re.compile(r"\s*(#\s*include)|(using)\s")
 
+FUNC_DEF_RE = re.compile(
+    r"\s*"
+    r"(?:(?:static|inline|constexpr|virtual|extern|template\s*<[^>]*>)\s+)*"
+    r"(?:\w[\w\s\*&:<>,]*?)\s+"
+    r"(\w+)\s*\([^)]*\)\s*"
+    r"(?:const\s*)?(?:noexcept\s*)?(?:override\s*)?(?:final\s*)?"
+    r"\{"
+)
+
 SOURCE_CODE_TEMPLATE = jinja2.Environment().from_string(
     textwrap.dedent(
         """\
         #include "boilerplate.h"
         {{ user_includes }}
+        {{ user_functions }}
         int main(void) {
             {{ user_input }}
             return 0;
@@ -49,6 +59,7 @@ class IGCCQuitError(Exception):
 class UserInput:
     inp: str
     is_include: bool
+    is_function: bool = False
     output_chars: int = 0
     error_chars: int = 0
 
@@ -81,7 +92,14 @@ class Runner:
                 if self.input_num < len(self.user_input):
                     self.user_input = self.user_input[: self.input_num]
 
-                new_inp = [UserInput(x, is_include=PREAMBLE_RE.match(x) is not None) for x in inp]
+                new_inp = [
+                    UserInput(
+                        x,
+                        is_include=PREAMBLE_RE.match(x) is not None,
+                        is_function=FUNC_DEF_RE.match(x) is not None,
+                    )
+                    for x in inp
+                ]
                 self.user_input += new_inp
                 self.input_num += len(new_inp)
 
@@ -136,6 +154,7 @@ class Runner:
     def get_full_source(self):
         return SOURCE_CODE_TEMPLATE.render(
             user_includes=self.get_user_includes_string(),
+            user_functions=self.get_user_functions_string(),
             user_input=self.get_user_commands_string(),
         )
 
@@ -143,12 +162,16 @@ class Runner:
         return itertools.islice(self.user_input, 0, self.input_num)
 
     def get_user_commands_string(self):
-        user_cmds = (a.inp for a in filter(lambda a: not a.is_include, self.get_user_input()))
+        user_cmds = (a.inp for a in filter(lambda a: not a.is_include and not a.is_function, self.get_user_input()))
         return "\n".join(user_cmds) + "\n"
 
     def get_user_includes_string(self):
         user_includes = (a.inp for a in filter(lambda a: a.is_include, self.get_user_input()))
         return "\n".join(user_includes) + "\n"
+
+    def get_user_functions_string(self):
+        user_funcs = (a.inp for a in filter(lambda a: a.is_function, self.get_user_input()))
+        return "\n".join(user_funcs) + "\n"
 
     def run_compile(self):
         src = self.get_full_source()
