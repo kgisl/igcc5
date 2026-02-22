@@ -232,6 +232,11 @@ class Runner:
 
         return False, False
 
+    def dot_c(self):
+        import os
+        os.system("clear" if os.name != "nt" else "cls")
+        return False, False
+
     def dot_h(self):
         for dot, (desc, _) in self.dot_commands.items():
             print(f"[bold][blue]{dot}[/blue][/bold]  {desc}")
@@ -240,6 +245,7 @@ class Runner:
 
     dot_commands = {
         ".h": ("Show this help message", dot_h),
+        ".c": ("Clear the screen", dot_c),
         ".e": ("Show the last compile errors/warnings", dot_e),
         ".l": ("List the code you have entered", dot_l),
         ".L": ("List the whole program as given to the compiler", dot_L),
