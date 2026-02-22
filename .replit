@@ -1,0 +1,30 @@
+modules = ["bash", "python-3.11"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["gcc"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "IGCC REPL"
+
+[[workflows.workflow]]
+name = "IGCC REPL"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "igcc"
+
+[workflows.workflow.metadata]
+outputType = "console"
