@@ -255,6 +255,17 @@ class Runner:
 
         return False, False
 
+    def dot_v(self):
+        from urllib.parse import quote
+        import webbrowser
+        code = self.get_full_source()
+        encoded = quote(code, safe="")
+        url = f"https://pythontutor.com/visualize.html#code={encoded}&mode=edit&py=cpp_g%2B%2B9.3.0&cumulative=false&heapPrimitives=false&textReferences=false"
+        print(f"[bold green]Opening PythonTutor...[/bold green]")
+        print(f"[dim]{url}[/dim]")
+        webbrowser.open(url)
+        return False, False
+
     def dot_c(self):
         import os
         os.system("clear" if os.name != "nt" else "cls")
@@ -272,6 +283,7 @@ class Runner:
         ".e": ("Show the last compile errors/warnings", dot_e),
         ".l": ("List the code you have entered", dot_l),
         ".L": ("List the whole program as given to the compiler", dot_L),
+        ".v": ("Visualize code in PythonTutor", dot_v),
         ".r": ("Redo undone command", dot_r),
         ".u": ("Undo previous command", dot_u),
         ".q": ("Quit", dot_q),
