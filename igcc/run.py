@@ -258,7 +258,7 @@ class Runner:
     def dot_v(self):
         from urllib.parse import quote
         import builtins
-        code = self.get_full_source()
+        code = self.get_full_source().replace('#include "boilerplate.h"\n', '')
         encoded = quote(code, safe="")
         url = f"https://pythontutor.com/visualize.html#code={encoded}&mode=edit&py=cpp_g%2B%2B9.3.0&cumulative=false&heapPrimitives=false&textReferences=false"
         print("[bold green]PythonTutor link:[/bold green]")
