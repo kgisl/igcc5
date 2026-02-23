@@ -252,7 +252,8 @@ class Runner:
         return False, False
 
     def dot_L(self):
-        print(self.get_full_source())
+        src = _clean_source(self.get_full_source().replace('#include "boilerplate.h"\n', ''))
+        print(src)
         return False, False
 
     def dot_r(self):
