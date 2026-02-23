@@ -43,7 +43,7 @@ SOURCE_CODE_TEMPLATE = jinja2.Environment().from_string(
         {{ user_includes }}
         {{ user_functions }}
         int main(void) {
-            {{ user_input }}
+            {{ user_input | indent(4, first=False) }}
             return 0;
         }
         """
@@ -163,7 +163,7 @@ class Runner:
 
     def get_user_commands_string(self):
         user_cmds = [a.inp for a in filter(lambda a: not a.is_include and not a.is_function, self.get_user_input())]
-        return "\n    ".join(user_cmds) + "\n"
+        return "\n".join(user_cmds) + "\n"
 
     def get_user_includes_string(self):
         user_includes = [a.inp for a in filter(lambda a: a.is_include, self.get_user_input())]
