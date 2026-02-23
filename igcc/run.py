@@ -257,13 +257,12 @@ class Runner:
 
     def dot_v(self):
         from urllib.parse import quote
-        import webbrowser
+        import builtins
         code = self.get_full_source()
         encoded = quote(code, safe="")
         url = f"https://pythontutor.com/visualize.html#code={encoded}&mode=edit&py=cpp_g%2B%2B9.3.0&cumulative=false&heapPrimitives=false&textReferences=false"
-        print(f"[bold green]Opening PythonTutor...[/bold green]")
-        print(f"[dim]{url}[/dim]")
-        webbrowser.open(url)
+        print("[bold green]PythonTutor link:[/bold green]")
+        builtins.print(url)
         return False, False
 
     def dot_c(self):
