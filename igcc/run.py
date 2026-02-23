@@ -162,15 +162,15 @@ class Runner:
         return itertools.islice(self.user_input, 0, self.input_num)
 
     def get_user_commands_string(self):
-        user_cmds = (a.inp for a in filter(lambda a: not a.is_include and not a.is_function, self.get_user_input()))
-        return "\n".join(user_cmds) + "\n"
+        user_cmds = [a.inp for a in filter(lambda a: not a.is_include and not a.is_function, self.get_user_input())]
+        return "\n    ".join(user_cmds) + "\n"
 
     def get_user_includes_string(self):
-        user_includes = (a.inp for a in filter(lambda a: a.is_include, self.get_user_input()))
+        user_includes = [a.inp for a in filter(lambda a: a.is_include, self.get_user_input())]
         return "\n".join(user_includes) + "\n"
 
     def get_user_functions_string(self):
-        user_funcs = (a.inp for a in filter(lambda a: a.is_function, self.get_user_input()))
+        user_funcs = [a.inp for a in filter(lambda a: a.is_function, self.get_user_input())]
         return "\n".join(user_funcs) + "\n"
 
     def run_compile(self):
