@@ -40,8 +40,12 @@ SOURCE_CODE_TEMPLATE = jinja2.Environment().from_string(
     textwrap.dedent(
         """\
         #include "boilerplate.h"
+        {% if user_includes %}
         {{ user_includes }}
+        {% endif %}
+        {% if user_functions %}
         {{ user_functions }}
+        {% endif %}
         int main(void) {
             {{ user_input | indent(4, first=False) }}
             return 0;
@@ -49,6 +53,19 @@ SOURCE_CODE_TEMPLATE = jinja2.Environment().from_string(
         """
     )
 )
+
+
+def _clean_source(src):
+    lines = src.split("\n")
+    result = []
+    prev_blank = False
+    for line in lines:
+        is_blank = line.strip() == ""
+        if is_blank and prev_blank:
+            continue
+        result.append(line)
+        prev_blank = is_blank
+    return "\n".join(result)
 
 
 class IGCCQuitError(Exception):
@@ -152,26 +169,27 @@ class Runner:
         return undone_input.inp
 
     def get_full_source(self):
-        return SOURCE_CODE_TEMPLATE.render(
+        src = SOURCE_CODE_TEMPLATE.render(
             user_includes=self.get_user_includes_string(),
             user_functions=self.get_user_functions_string(),
             user_input=self.get_user_commands_string(),
         )
+        return _clean_source(src)
 
     def get_user_input(self):
         return itertools.islice(self.user_input, 0, self.input_num)
 
     def get_user_commands_string(self):
         user_cmds = [a.inp for a in filter(lambda a: not a.is_include and not a.is_function, self.get_user_input())]
-        return "\n".join(user_cmds) + "\n"
+        return "\n".join(user_cmds)
 
     def get_user_includes_string(self):
         user_includes = [a.inp for a in filter(lambda a: a.is_include, self.get_user_input())]
-        return "\n".join(user_includes) + "\n"
+        return "\n".join(user_includes)
 
     def get_user_functions_string(self):
         user_funcs = [a.inp for a in filter(lambda a: a.is_function, self.get_user_input())]
-        return "\n".join(user_funcs) + "\n"
+        return "\n".join(user_funcs)
 
     def run_compile(self):
         src = self.get_full_source()
