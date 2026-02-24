@@ -296,7 +296,7 @@ class Runner:
         import builtins
         code = self.get_full_source().replace('#include "boilerplate.h"\n', '')
         encoded = quote(code, safe="")
-        url = f"https://pythontutor.com/visualize.html#code={encoded}&mode=edit&py=cpp_g%2B%2B9.3.0&cumulative=false&heapPrimitives=false&textReferences=false"
+        url = f"https://pythontutor.com/c.html#code={encoded}&mode=edit&origin=opt-frontend.js&cumulative=false&heapPrimitives=nevernest&textReferences=false"
         print("[bold green]PythonTutor link:[/bold green]")
         builtins.print(url)
         return False, False
