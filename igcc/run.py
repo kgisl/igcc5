@@ -91,6 +91,7 @@ class Runner:
         self.compile_error = ""
         self.output_chars_printed = 0
         self.error_chars_printed = 0
+        self.show_line_numbers = False
         self.subs_compiler_cmd = igcc.utils.get_compiler_command(
             CONFIG, self.args, self.exec_filename
         )
@@ -243,16 +244,32 @@ class Runner:
     def dot_q(self):
         raise IGCCQuitError()
 
+    def _add_line_numbers(self, code):
+        lines = code.split("\n")
+        width = len(str(len(lines)))
+        return "\n".join(f"{i + 1:>{width}}  {line}" for i, line in enumerate(lines))
+
+    def dot_n(self):
+        self.show_line_numbers = not self.show_line_numbers
+        state = "on" if self.show_line_numbers else "off"
+        print(f"[black on white]Line numbers {state}")
+        return False, False
+
     def dot_l(self):
-        code = f"{self.get_user_includes_string()}\n{self.get_user_commands_string()}"
+        parts = [p for p in [self.get_user_includes_string(), self.get_user_commands_string()] if p.strip()]
+        code = "\n".join(parts)
         if not code.strip():
             print("[black on white]No code entered yet")
         else:
+            if self.show_line_numbers:
+                code = self._add_line_numbers(code)
             print(code)
         return False, False
 
     def dot_L(self):
         src = _clean_source(self.get_full_source().replace('#include "boilerplate.h"\n', ''))
+        if self.show_line_numbers:
+            src = self._add_line_numbers(src)
         print(src)
         return False, False
 
@@ -301,6 +318,7 @@ class Runner:
         ".e": ("Show the last compile errors/warnings", dot_e),
         ".l": ("List the code you have entered", dot_l),
         ".L": ("List the whole program as given to the compiler", dot_L),
+        ".n": ("Toggle line numbers for .l and .L listings", dot_n),
         ".v": ("Visualize code in PythonTutor", dot_v),
         ".r": ("Redo undone command", dot_r),
         ".u": ("Undo previous command", dot_u),

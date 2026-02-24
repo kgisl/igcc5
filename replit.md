@@ -31,4 +31,5 @@ Interactive GCC is a read-eval-print loop (REPL) for C/C++. It works by manipula
 The `igcc` command starts the interactive C/C++ REPL in the console.
 
 ## Recent Changes
+- 2026-02-24: Added `.n` dot command to toggle line numbers for `.l` and `.L` listings
 - 2026-02-22: Initial Replit setup - installed Python 3.11, gcc, and project dependencies
