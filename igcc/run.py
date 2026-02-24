@@ -301,6 +301,16 @@ class Runner:
         builtins.print(url)
         return False, False
 
+    def dot_vt(self):
+        from urllib.parse import quote
+        import builtins
+        code = self.get_full_source().replace('#include "boilerplate.h"\n', '')
+        encoded = quote(code, safe="")
+        url = f"https://pythontutor.com/visualize.html#code={encoded}&cumulative=false&heapPrimitives=nevernest&mode=display&origin=opt-frontend.js&py=c_gcc9.3.0&textReferences=false"
+        print("[bold green]PythonTutor (teacher mode) link:[/bold green]")
+        builtins.print(url)
+        return False, False
+
     def dot_c(self):
         import os
         os.system("clear" if os.name != "nt" else "cls")
@@ -320,6 +330,7 @@ class Runner:
         ".L": ("List the whole program as given to the compiler", dot_L),
         ".n": ("Toggle line numbers for .l and .L listings", dot_n),
         ".v": ("Visualize code in PythonTutor", dot_v),
+        ".vt": ("Visualize code in PythonTutor (teacher mode)", dot_vt),
         ".r": ("Redo undone command", dot_r),
         ".u": ("Undo previous command", dot_u),
         ".q": ("Quit", dot_q),
